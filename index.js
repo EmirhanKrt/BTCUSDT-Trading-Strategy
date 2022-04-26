@@ -58,7 +58,7 @@ app.get('*', (req, res) => {
     res.sendFile("./index.html",{ root : __dirname});
  });
 
-app.listen(5000, (error) => {
+app.listen(5000 || process.env.PORT, (error) => {
     if (error) {
       throw new Error(error);
     }
