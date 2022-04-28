@@ -119,7 +119,6 @@ const positionHandler = async (action, count, position_size, price) => {
                 default:
                     break;
             }
-            await telegramMessageSender(text);
         } else {
             switch (action) {
                 case "OPEN_SHORT":
@@ -131,8 +130,8 @@ const positionHandler = async (action, count, position_size, price) => {
                 default:
                     break;
             }
-            await telegramMessageSender(text);
         }
+        await telegramMessageSender(text);
     } catch (error) {
         console.log(error);
     }
@@ -158,30 +157,25 @@ app.post("/tradingview_webhook", async (req, res) => {
             if (req.body.SIDE.includes("buy")) {
                 if (parseInt(req.body.POSITION_SIZE) === 0) {
                     action = "CLOSE_SHORT";
-                    await positionHandler(action, req.body.COUNT, req.body.POSITION_SIZE, req.body.PRICE);
                 } else {
                     if (parseInt(req.body.POSITION_SIZE) === parseInt(req.body.COUNT)) {
                         action = "OPEN_LONG";
-                        await positionHandler(action, req.body.COUNT, req.body.POSITION_SIZE, req.body.PRICE);
                     } else {
                         action = "TP_SHORT";
-                        await positionHandler(action, req.body.COUNT, req.body.POSITION_SIZE, req.body.PRICE);
                     }
                 }
             } else if (req.body.SIDE.includes("sell")) {
                 if (parseInt(req.body.POSITION_SIZE) === 0) {
                     action = "CLOSE_LONG";
-                    await positionHandler(action, req.body.COUNT, req.body.POSITION_SIZE, req.body.PRICE);
                 } else {
                     if (parseInt(req.body.POSITION_SIZE) * -1 === parseInt(req.body.COUNT)) {
                         action = "OPEN_SHORT";
-                        await positionHandler(action, req.body.COUNT, req.body.POSITION_SIZE, req.body.PRICE);
                     } else {
                         action = "TP_LONG";
-                        await positionHandler(action, req.body.COUNT, req.body.POSITION_SIZE, req.body.PRICE);
                     }
                 }
             }
+            await positionHandler(action, req.body.COUNT, req.body.POSITION_SIZE, req.body.PRICE);
             res.status(200).send("Correct Auth");
         } else {
             res.status(403).send("Invalid Origin");
